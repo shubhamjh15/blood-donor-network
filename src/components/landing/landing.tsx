@@ -113,14 +113,17 @@ export function Landing() {
               </div>
               <div className="text-sm">
                 <p className="font-semibold"><NumberTicker value={stats?.donors ?? 0} /> registered donors</p>
-                <p className="text-muted-foreground">across <NumberTicker value={stats?.cities ?? 0} /> cities · all 8 blood types</p>
+                <p className="text-muted-foreground">across <NumberTicker value={stats?.cities ?? 0} /> {stats?.cities === 1 ? "city" : "cities"} · all 8 blood types</p>
               </div>
             </motion.div>
           </motion.div>
 
           <motion.div style={{ y: sceneY, opacity: sceneOpacity }} className="relative h-[460px] sm:h-[560px] lg:h-[680px]">
             <div className="absolute inset-[15%] rounded-full bg-blood-600/30 blur-[100px]" />
-            <HeroScene />
+            {/* Canvas bleeds past the column so orbiting cells aren't clipped; edges fade out */}
+            <div className="absolute inset-y-0 -left-[30%] -right-[15%] [mask-image:linear-gradient(to_right,transparent,black_25%,black_85%,transparent)]">
+              <HeroScene />
+            </div>
             <FloatingChip className="left-0 top-[18%]" delay={1.2} icon={<Zap className="size-4 text-amber-300" />} title="Open requests" value={stats ? stats.openRequests.toLocaleString() : "—"} />
             <FloatingChip className="right-0 top-[55%]" delay={1.4} icon={<HeartPulse className="size-4 text-blood-300" />} title="Lives impacted" value={stats ? stats.livesImpacted.toLocaleString() : "—"} />
           </motion.div>
