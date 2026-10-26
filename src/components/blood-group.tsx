@@ -26,7 +26,7 @@ export const GROUP_HEX: Record<BloodGroup, string> = {
 };
 
 export function BloodBadge({ group, size = "md", className }: { group: string; size?: "sm" | "md" | "lg" | "xl"; className?: string }) {
-  const s = { sm: `size-8 ${group.length > 2 ? "text-[9px] tracking-tighter" : "text-[11px]"}`, md: "size-11 text-sm", lg: "size-14 text-lg", xl: "size-20 text-2xl" }[size];
+  const s = { sm: `size-8 ${group.length > 2 ? "text-[8px] tracking-tighter" : "text-[11px]"}`, md: "size-11 text-sm", lg: "size-14 text-lg", xl: "size-20 text-2xl" }[size];
   return (
     <div
       className={cn(

@@ -3,6 +3,7 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Aurora } from "@/components/effects";
+import { SafeScene } from "@/components/three/safe-scene";
 
 const HeroScene = dynamic(() => import("@/components/three/hero-scene"), { ssr: false });
 
@@ -13,7 +14,7 @@ export function AuthShell({ children, title, subtitle, quote }: { children: Reac
         <Aurora />
         <div className="absolute inset-0 bg-grid mask-radial opacity-50" />
         <div className="absolute inset-0">
-          <HeroScene />
+          <SafeScene><HeroScene /></SafeScene>
         </div>
         <motion.blockquote
           initial={{ opacity: 0, y: 20 }}

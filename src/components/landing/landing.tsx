@@ -13,18 +13,11 @@ import { BloodBadge, GROUP_HEX } from "@/components/blood-group";
 import { CompatibilityExplorer } from "@/components/compatibility-explorer";
 import { EligibilityChecker } from "@/components/eligibility-checker";
 import { useMe } from "@/lib/client";
+import { SafeScene, SceneFallback } from "@/components/three/safe-scene";
 import { cn } from "@/lib/utils";
 
 const HeroScene = dynamic(() => import("@/components/three/hero-scene"), { ssr: false, loading: () => <SceneFallback /> });
 const GlobeScene = dynamic(() => import("@/components/three/globe-scene"), { ssr: false, loading: () => <SceneFallback /> });
-
-function SceneFallback() {
-  return (
-    <div className="grid size-full place-items-center">
-      <div className="size-40 animate-pulse rounded-full bg-blood-500/20 blur-2xl" />
-    </div>
-  );
-}
 
 type Stats = {
   donors: number;
@@ -121,8 +114,8 @@ export function Landing() {
           <motion.div style={{ y: sceneY, opacity: sceneOpacity }} className="relative h-[460px] sm:h-[560px] lg:h-[680px]">
             <div className="absolute inset-[15%] rounded-full bg-blood-600/30 blur-[100px]" />
             {/* Canvas bleeds past the column so orbiting cells aren't clipped; edges fade out */}
-            <div className="absolute inset-y-0 -left-[30%] -right-[15%] [mask-image:linear-gradient(to_right,transparent,black_25%,black_85%,transparent)]">
-              <HeroScene />
+            <div className="absolute inset-y-0 -left-[30%] -right-[30%] [mask-image:linear-gradient(to_right,transparent,black_22%,black_78%,transparent)]">
+              <SafeScene><HeroScene /></SafeScene>
             </div>
             <FloatingChip className="left-0 top-[18%]" delay={1.2} icon={<Zap className="size-4 text-amber-300" />} title="Open requests" value={stats ? stats.openRequests.toLocaleString() : "—"} />
             <FloatingChip className="right-0 top-[55%]" delay={1.4} icon={<HeartPulse className="size-4 text-blood-300" />} title="Lives impacted" value={stats ? stats.livesImpacted.toLocaleString() : "—"} />
@@ -307,7 +300,7 @@ export function Landing() {
             </div>
           </Reveal>
           <div className="relative h-[420px] cursor-grab active:cursor-grabbing sm:h-[520px]">
-            <GlobeScene donorPoints={donorPoints} />
+            <SafeScene><GlobeScene donorPoints={donorPoints} /></SafeScene>
           </div>
         </div>
       </section>
