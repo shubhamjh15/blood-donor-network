@@ -59,7 +59,7 @@ export const GET = handler(async (req: Request) => {
     { $limit: 150 },
   ];
   const raw = await BloodRequest.aggregate<RequestShape & { _id: Types.ObjectId; distance: number }>(pipeline);
-  const docs = await BloodRequest.populate(raw, POPULATE);
+  const docs = (await BloodRequest.populate(raw, POPULATE)) as unknown as typeof raw;
 
   const urgencyRank: Record<string, number> = { critical: 0, high: 1, normal: 2 };
   const requests = docs

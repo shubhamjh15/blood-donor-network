@@ -15,7 +15,7 @@ export async function notifyNearbyDonors(request: RequestDoc) {
     bloodGroup: { $in: CAN_RECEIVE_FROM[request.bloodGroup as BloodGroup] },
     location: {
       $nearSphere: {
-        $geometry: { type: "Point", coordinates: request.location.coordinates },
+        $geometry: { type: "Point", coordinates: request.location!.coordinates },
         $maxDistance: radius * 1000,
       },
     },

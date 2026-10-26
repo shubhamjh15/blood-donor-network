@@ -84,7 +84,7 @@ export function serializeRequest(r: RequestShape & { _id: unknown; createdAt?: D
     neededBy: new Date(r.neededBy).toISOString(),
     note: r.note,
     status: r.status,
-    coordinates: r.location.coordinates as [number, number],
+    coordinates: r.location!.coordinates as [number, number],
     responders,
     responderCount: responders.filter((x) => x.status !== "withdrawn").length,
     hasResponded: !!viewerId && responders.some((x) => x.userId === viewerId && x.status !== "withdrawn"),
