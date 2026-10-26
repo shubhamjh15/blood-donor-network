@@ -13,7 +13,7 @@ export const GET = handler(async () => {
   await connectDB();
   const since = new Date(Date.now() - 30 * 86_400_000);
 
-  const [donors, available, openRequests, fulfilled, donations, byGroupRaw, cities, recent, daily] = await Promise.all([
+  const [donors, available, openRequests, fulfilled, donations, byGroupRaw, cities, recent, daily, activity] = await Promise.all([
     User.countDocuments({ isDonor: true }),
     User.countDocuments({ isDonor: true, available: true }),
     BloodRequest.countDocuments({ status: "open" }),
@@ -30,6 +30,7 @@ export const GET = handler(async () => {
       { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } }, count: { $sum: 1 } } },
       { $sort: { _id: 1 } },
     ]),
+    BloodRequest.find({}).sort({ createdAt: -1 }).limit(14).select("bloodGroup hospital urgency status units createdAt").lean(),
   ]);
 
   const byGroup = BLOOD_GROUPS.map((g) => ({ group: g, count: byGroupRaw.find((x) => x._id === g)?.count ?? 0 }));
@@ -46,5 +47,14 @@ export const GET = handler(async () => {
     byGroup,
     donorPoints,
     daily: daily.map((d) => ({ date: d._id, count: d.count })),
+    activity: activity.map((a) => ({
+      id: String(a._id),
+      bloodGroup: a.bloodGroup,
+      hospital: a.hospital,
+      urgency: a.urgency,
+      status: a.status,
+      units: a.units,
+      createdAt: new Date((a as { createdAt: Date }).createdAt).toISOString(),
+    })),
   });
 });
