@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Float, Lightformer, MeshDistortMaterial, Sparkles } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { createDropGeometry, createRbcGeometry } from "./geometries";
+import { Boundary, SceneVisible } from "./safe-scene";
 
 function BloodDropMesh() {
   const geo = React.useMemo(() => createDropGeometry(), []);
@@ -53,7 +54,7 @@ function BloodDropMesh() {
   );
 }
 
-function RedBloodCells({ count = 46 }) {
+function RedBloodCells({ count = 32 }) {
   const geo = React.useMemo(() => createRbcGeometry(), []);
   const ref = React.useRef<THREE.InstancedMesh>(null);
   const dummy = React.useMemo(() => new THREE.Object3D(), []);
@@ -105,8 +106,9 @@ function Rig() {
 }
 
 export default function HeroScene() {
+  const visible = React.useContext(SceneVisible);
   return (
-    <Canvas dpr={[1, 1.75]} camera={{ position: [0, 0, 6.2], fov: 42 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
+    <Canvas frameloop={visible ? "always" : "never"} dpr={[1, 1.5]} camera={{ position: [0, 0, 6.2], fov: 42 }} gl={{ antialias: true, alpha: true, powerPreference: "default", failIfMajorPerformanceCaveat: false }}>
       <ambientLight intensity={0.25} />
       <pointLight position={[3, 3, 4]} intensity={40} color="#ff4d6d" />
       <pointLight position={[-4, -2, 2]} intensity={25} color="#ff8a5c" />
@@ -116,7 +118,7 @@ export default function HeroScene() {
         <BloodDropMesh />
       </Float>
       <RedBloodCells />
-      <Sparkles count={70} scale={[9, 6, 4]} size={2.4} speed={0.35} color="#ff6b81" opacity={0.7} />
+      <Sparkles count={40} scale={[9, 6, 4]} size={2.4} speed={0.35} color="#ff6b81" opacity={0.7} />
 
       <Environment resolution={256}>
         <Lightformer form="rect" intensity={3} position={[0, 4, 3]} scale={[8, 2, 1]} color="#ffffff" />
@@ -125,10 +127,13 @@ export default function HeroScene() {
         <Lightformer form="circle" intensity={1.5} position={[0, -4, -2]} scale={6} color="#6b0f2a" />
       </Environment>
 
-      <EffectComposer multisampling={0}>
-        <Bloom intensity={0.85} luminanceThreshold={0.25} luminanceSmoothing={0.6} mipmapBlur />
-        <Vignette offset={0.25} darkness={0.7} />
-      </EffectComposer>
+      {/* Bloom is optional — if the GPU can't do it, keep the scene without it */}
+      <Boundary label="Bloom" fallback={() => null}>
+        <EffectComposer multisampling={0}>
+          <Bloom intensity={0.85} luminanceThreshold={0.25} luminanceSmoothing={0.6} mipmapBlur />
+          <Vignette offset={0.25} darkness={0.7} />
+        </EffectComposer>
+      </Boundary>
       <Rig />
     </Canvas>
   );

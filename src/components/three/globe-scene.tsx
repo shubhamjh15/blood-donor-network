@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Line, OrbitControls } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { fibonacciSphere, latLngToVec3 } from "./geometries";
+import { Boundary, SceneVisible } from "./safe-scene";
 
 const R = 2;
 const HUBS: [number, number][] = [
@@ -15,13 +16,13 @@ const HUBS: [number, number][] = [
 
 function DotSphere() {
   const geo = React.useMemo(() => {
-    const pts = fibonacciSphere(5200, R);
+    const pts = fibonacciSphere(2600, R);
     const g = new THREE.BufferGeometry().setFromPoints(pts);
     return g;
   }, []);
   return (
     <points geometry={geo}>
-      <pointsMaterial size={0.018} color="#7a6b85" transparent opacity={0.55} sizeAttenuation />
+      <pointsMaterial size={0.024} color="#7a6b85" transparent opacity={0.55} sizeAttenuation />
     </points>
   );
 }
@@ -129,15 +130,18 @@ function Globe({ donorPoints }: { donorPoints: [number, number][] }) {
 }
 
 export default function GlobeScene({ donorPoints = [] }: { donorPoints?: [number, number][] }) {
+  const visible = React.useContext(SceneVisible);
   return (
-    <Canvas dpr={[1, 1.75]} camera={{ position: [0, 0, 6], fov: 45 }} gl={{ alpha: true, antialias: true }}>
+    <Canvas frameloop={visible ? "always" : "never"} dpr={[1, 1.5]} camera={{ position: [0, 0, 6], fov: 45 }} gl={{ alpha: true, antialias: true, failIfMajorPerformanceCaveat: false }}>
       <ambientLight intensity={0.4} />
       <directionalLight position={[5, 3, 5]} intensity={1.2} />
       <Globe donorPoints={donorPoints} />
       <OrbitControls enableZoom={false} enablePan={false} rotateSpeed={0.5} autoRotate={false} />
-      <EffectComposer multisampling={0}>
-        <Bloom intensity={1.1} luminanceThreshold={0.2} mipmapBlur />
-      </EffectComposer>
+      <Boundary label="Bloom" fallback={() => null}>
+        <EffectComposer multisampling={0}>
+          <Bloom intensity={1.1} luminanceThreshold={0.2} mipmapBlur />
+        </EffectComposer>
+      </Boundary>
     </Canvas>
   );
 }
