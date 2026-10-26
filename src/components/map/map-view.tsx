@@ -32,8 +32,9 @@ export type MapViewProps = {
   fitRadius?: boolean;
 };
 
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>';
+// Free, keyless OpenStreetMap tiles — darkened with a CSS filter (see .bl-dark-tiles in globals.css)
+const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 const iconCache = new Map<string, L.DivIcon>();
 function markerIcon(m: MapMarker, selected: boolean) {
@@ -124,7 +125,7 @@ export default function MapView({
       style={{ height: "100%", width: "100%" }}
       attributionControl
     >
-      <TileLayer url={TILE_URL} attribution={ATTRIBUTION} subdomains="abcd" maxZoom={19} />
+      <TileLayer url={TILE_URL} attribution={ATTRIBUTION} maxZoom={19} className="bl-dark-tiles" />
       <FlyTo center={center} zoom={zoom} radiusKm={radiusKm} fitRadius={fitRadius} />
       <ClickHandler onMapClick={onMapClick} />
       <SelectedPan selected={selected} />

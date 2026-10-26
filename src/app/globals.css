@@ -145,6 +145,9 @@
 }
 
 /* ---------- Leaflet dark theme ---------- */
+.bl-dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.35);
+}
 .leaflet-container {
   background: #0b0a0f !important;
   font-family: var(--font-sans) !important;
